@@ -1,0 +1,962 @@
+
+
+
+
+message AppInfo {
+    // The app name
+    optional string name = 1;
+
+    // The app version
+    optional string version = 2;
+
+    // The os name and version
+    optional string os = 3;
+
+    // The device(phone/tablet/computer) name
+    optional string device = 4;
+
+
+
+}
+
+
+
+
+
+
+message Course {
+    // The name of the course
+    optional string   name = 1;
+    
+    // The description of the course
+    optional string   description = 2;
+    
+    // The creation time (UTC)
+    required DateTime created = 3;
+    
+    // The start of this course in meters or seconds from the start of the training.
+    // (depending on the type of the training to which this course belongs)
+    required float    start = 5;
+    
+    // The end of this course in meters or seconds from the start of the training.
+    // (depending on the type of the training to which this course belongs)
+    required float    end = 6;
+    
+    // The functional threshold power for which this course was created
+    optional int32    functional_threshold_power = 9;
+    
+    // The altitude of this course's startpoint.
+    optional float    start_altitude = 10;
+    
+    // The height climbed during this course in meters. 
+    // This is only used in slope trainings.
+    optional float    climbing_height = 11;
+    
+    // The maximum altitude 
+    optional float    max_altitude = 12;
+    
+    // The total distance in m that is going uphill. 
+    // This is only used in slope trainings.
+    optional float    climbing_distance = 14;
+    
+    // The cotacol points, this is an indication of overall difficulty of the climb.
+    // This is only used in slope trainings.
+    optional int32    cotacol_points = 15; // This value was stored as a float but was always stored as an int32 on the client, therefor it was changed
+    
+    // The average segment value taking the length of the segment into account.
+    // The value can be either power, heartrate or slope.
+    optional float    average_segment_value = 16;
+    
+    // Gets or sets the maximum segment value.
+    // The value can be either power, heartrate or slope.
+    optional float    max_segment_value = 17;
+    
+    // Gets or sets the minimum segment value.
+    // The value can be either power, heartrate or slope.    
+    optional float    min_segment_value = 18;
+    
+    // Get if this course is the full course of the parent's training.
+    // The full course is a mandatory course and should never be deleted unless the training is deleted too.
+    // As a result each training needs exactly one full course (so it cannot have more than one)
+    optional bool     is_full_course = 19;
+    
+    // The course' thumbnail image data (PNG).
+    optional bytes    thumbnail = 20;
+    
+    // The total distance in m that is going downhill. 
+    // This is only used in slope trainings.
+    optional float    descending_distance = 21;
+
+    // The app info
+    optional AppInfo app_info = 28;
+}
+
+
+
+
+
+
+
+message DataTrack {
+    // The starting offset of this data track.
+    // Depending on the training type this can be a time or a distance.
+    optional float start_offset = 1;
+        
+    // The end offset of this data track.
+    // Depending on the training type this can be a time or a distance.
+    optional float end_offset = 2;
+    
+    // The training goal data. Will and MUST be undefined (null) when either the location_data, gears_data or field is assigned.
+    optional TrainingGoalDataTrack training_goal_data = 100;
+        
+    // The location data. Will and MUST be undefined (null) when either the training_goal_data, gears_data or road_surface_data field is assigned.
+    optional LocationDataTrack location_data = 101;
+    
+    // The gears data. Will and MUST be undefined (null) when either the training_goal_data , location_data or road_surface_data field is assigned.
+    optional GearsDataTrack gears_data = 102;
+    
+    // The road surfaces data. Will and MUST be undefined (null) when either the training_goal_data, location_data or gears_data field is assigned.
+    optional RoadSurfaceDataTrack road_surface_data = 103;
+}
+
+
+
+
+
+
+// From: http://code.google.com/p/protobuf-net/source/browse/trunk/Tools/bcl.proto
+message DateTime {
+    // The offset (in units of the selected scale) from 1970/01/01.
+    optional sint64 value = 1;
+    
+    // The scale of the timespan.
+    optional TimeSpanScale scale = 2 [default = DAYS];
+    
+    // The enum defining all available time span scales.
+    enum TimeSpanScale {
+        DAYS = 0;
+        HOURS = 1;
+        MINUTES = 2;
+        SECONDS = 3;
+        MILLISECONDS = 4;
+        TICKS = 5;
+
+        MINMAX = 15; // dubious
+    }
+}
+
+
+
+
+
+message GearsDataTrack {
+    // The number of teeth of the chainring to use.
+    optional int32    chain_ring_teeth = 1;
+    
+    // The number of teeth of the sprocket to use.
+    optional int32    sprocket_teeth = 2;
+}
+
+
+
+
+
+
+
+message GpsData {
+    // The list of gps points.
+    repeated GpsPoint item = 1;
+}
+
+
+
+
+
+message GpsPoint { // Original name: 'Segment'
+    // The field storing additional data
+    optional GpsPoint1 member = 1;   
+    
+    // The position in the training where this segment starts, from the start of the training.
+    optional float position_from_start = 10;
+    
+    // Value of the training block. This determines it's height (visually) and it's difficulty (how hard to cycle).
+    // Data is interpreted according to training program it is contained in.
+    // Slope: slope in form of -1.0 -> 1.0 (positive slope is uphill; negative is dowhill.)
+    // Power: Watt
+    // Heartrate: hertz
+    // RelativePower: percentage, a value between 0 and 1.
+    // RelativeHeartRate: percentage, a value between 0 and 1.
+    optional float value = 11;
+}
+
+message GpsPoint1 { // Original name: 'GpsPoint'
+    // The field containing additional data
+    // NOTE: This field is defined here to be complete but isn't normally used when working with a GpsPoint (side effect on how AIM defined the model in C#)
+    optional GpsPoint2 member = 1;
+    
+    // The latutude of this GPS point.
+    optional float latitude = 10;
+    
+    // The longitude of this GPS point.
+    optional float longitude = 11;
+    
+    // The altitude of this GPS point.
+    optional float altitude = 12;
+}
+
+// NOTE: This message is defined her to be complete but isn't normally used when working with a GpsPoint (side effect on how AIM defined the model in C#)
+message GpsPoint2 { // Original name: 'VideoPoint'
+    // The current video frame
+    optional int32 frame = 1;
+    
+    // The timestamp of the current video frame
+    optional float time_stamp = 2;    
+}
+
+
+
+
+
+
+
+message LocationDataTrack {
+    // The name of the location.
+    optional string name = 1;
+    
+    // The location type.    
+    // An enumeration initially defining Climb, Place, ...
+    optional LocationType location_type = 2;
+}
+
+
+
+
+
+enum LocationType {
+    LOCATION_NONE = 0;
+    LOCATION_CLIMB = 1;
+    LOCATION_PLACE = 2;
+}
+
+
+
+
+
+
+
+message Pause {
+    // The time that the pause was started.
+    optional TimeSpan start = 1;
+    
+    // The time that the pause was ended.
+    optional TimeSpan end = 2;
+}
+
+
+
+
+
+
+
+message PowerModeChange {
+    // The time on which the powermode was changed.
+    optional TimeSpan time = 1;
+    
+    // The distance in meters from the start where the powermode was changed.
+    optional float    distance = 2;
+    
+    // The set powermode.
+    optional float    power_mode = 3;
+}
+
+
+
+
+
+
+
+message RoadSurfaceDataTrack {
+    // The road surface type
+    optional int32 surface = 1; // See RoadSurfaces @ road_surfaces.proto)
+    
+    // The intensity (0 - 100)
+    optional int32 intensity = 2;
+}
+
+
+
+
+
+enum RoadSurfaces {
+    ROAD_SURFACE_ASPHALT = 0;
+    ROAD_SURFACE_CONCRETE_PLATES = 1;
+    ROAD_SURFACE_CATTLE_GRATE = 2;
+    ROAD_SURFACE_COBBLE_HARD = 3;
+    ROAD_SURFACE_COBBLE_SOFT = 4;
+    ROAD_SURFACE_STONES = 5;
+    ROAD_SURFACE_DIRT = 6;
+    ROAD_SURFACE_GRAVEL = 7;
+    ROAD_SURFACE_ICE = 8;
+    ROAD_SURFACE_WOODEN_BOARDS = 9;
+}
+
+
+
+
+
+
+
+message Score {
+    // The score info.
+    required ScoreInfo info = 1;
+    
+    // The score data.
+    optional ScoreData data = 100;
+}
+
+
+
+
+
+message ScoreBicycleInfo {
+    // The bicycle type
+    optional int32 bicycle_type = 1; // See ScoreBicycleType @ score_bicycle_type.proto)
+    
+    // The bicycle mass
+    optional float mass = 2;
+    
+    // The bicycle air resistance coefficient
+    optional float air_resistance_coefficient = 3;
+    
+    // The bicycle project frontal surface
+    optional float projected_frontal_surface = 4;
+}
+
+
+
+
+
+enum ScoreBicycleType {
+    SCORE_BICYCLE_TYPE_RACING_BIKE = 0;
+    SCORE_BICYCLE_TYPE_MOUNTAIN_BIKE = 1;
+    SCORE_BICYCLE_TYPE_TRIATHLON_BIKE = 2;
+}
+
+
+
+
+
+
+
+message ScoreData {
+    // The list of recorded pauses.
+    repeated Pause           pause = 1;
+    
+    // The list of recorded score samples.
+    repeated ScoreSample     sample = 2;
+    
+    // The list of recorded power mode changes.
+    repeated PowerModeChange power_mode_change = 3;
+}
+
+
+
+
+
+message ScoreDeviceInfo {
+    // The serial
+    optional string serial = 1;
+
+    // The (firmware) version
+    optional string version = 2;
+
+    // The protocol type
+    optional int32 protocol_type = 3; // See ScoreProtocolType @ score_protocol_type.proto)
+
+    // The device type
+    optional int32 device_type = 4; // See ScoreDeviceType @ device_type.proto) 
+}
+
+
+
+
+
+enum ScoreDeviceType {
+    SCORE_DEVICE_TYPE_UNKNOWN = 0;
+    SCORE_DEVICE_TYPE_SPEED = 1;
+    SCORE_DEVICE_TYPE_POWER = 2;
+    SCORE_DEVICE_TYPE_CADENCE = 3;
+    SCORE_DEVICE_TYPE_HEARTRATE = 4;
+    SCORE_DEVICE_TYPE_RESISTANCE = 5;
+    SCORE_DEVICE_TYPE_REMOTE_CONTROL = 6;
+}
+
+
+
+
+
+message ScoreHeartrateSettings {    
+    // The minimum heartrate in Hz
+    optional float minimum = 1;
+    
+    // The maximum heartrate in Hz
+    optional float maximum = 2;
+    
+    // The threshold heartrate in Hz
+    optional float threshold = 3;
+    
+    // The lower limit for the display lines in Hz
+    optional float lower_limit = 4;
+    
+    // The upper limit for the display lines in Hz
+    optional float higher_limit = 5;
+    
+    // The training zone 1 value, also known as recovery (aerobic) in Hz
+    optional float zone_1 = 6;
+    
+    // The training zone 1 value, also known as endurance (aerobic) in Hz
+    optional float zone_2 = 7;
+    
+    // The training zone 1 value, also known as stamina (aerobic) in Hz
+    optional float zone_3 = 8;
+    
+    // The training zone 1 value, also known as economy (aerobic) in Hz
+    optional float zone_4 = 9;
+    
+    // The training zone 1 value, also known as speed (aerobic) in Hz
+    optional float zone_5 = 10;
+}
+
+
+
+
+
+
+
+message ScoreInfo { // Original name: 'BasicInfo'
+    // The field storing additional data
+    optional ScoreInfo1 member = 2;
+    
+    // The creation time (UTC).
+    required DateTime date_created = 12;
+}
+
+message ScoreInfo1 { // Original name: 'ScoreInfo'
+    // The maximum heartrate limit as it was set by the user while riding this activity in BPM.
+    optional int32 legacy_maximum_heartrate_limit = 5;
+    
+    // The minimum heartrate limit as it was set by the user while riding this activity in BPM.
+    optional int32 legacy_minimum_heartrate_limit = 6;
+    
+    // The powermode set at the start of this activity.
+    optional float power_mode = 7;
+    
+    // The distance travelled during the training in meters.
+    optional float distance = 8;
+    
+    // The duration of the training activity.
+    optional TimeSpan duration = 9;
+    
+    // Stores if a custom power mode was enabled.
+    optional bool power_mode_enabled = 11;
+    
+    // Stores if the powermode was changed during this score.
+    optional bool power_mode_changed = 12;
+    
+    // The heartrate statistics
+    optional ScoreStatistics heartrate_statistics = 13;
+    
+    // The power statistics
+    optional ScoreStatistics power_statistics = 14;
+    
+    // The power statistics
+    optional ScoreStatistics cadence_statistics = 15;
+    
+    // The speed statistics
+    optional ScoreStatistics speed_statistics = 16;
+    
+    // The relative power during this activity. (Watt/kg)
+    optional float relative_power = 17;
+    
+    // The total energy output during this activity. (Joule)
+    optional float energy_output = 18;
+    
+    // The maximum heartrate limit as it was set by the user while riding this activity in hertz.
+    optional float maximum_heartrate_limit = 19;
+    
+    // he minimum heartrate limit as it was set by the user while riding this activity in hertz.
+    optional float minimum_heartrate_limit = 20;
+    
+    // the average powermode value if available.
+    optional float average_power_mode = 21;
+    
+    // The maximum powermode value if available. 
+    optional float maximum_power_mode = 22;
+
+    
+    // Stores if there are power details available for this score
+    optional bool power_available = 23;
+    
+    // Stores if there are cadence details available for this score
+    optional bool cadence_available = 24;
+    
+    // Stores if there are heartrate details available for this score
+    optional bool heartrate_available = 25;
+    
+    // A user' mass
+    optional float user_mass = 26;
+    
+    // A user' FTP
+    optional float functional_threshold_power = 27;
+    
+    // The app info
+    optional AppInfo app_info = 28;
+    
+    // The user' heartrate settings
+    optional ScoreHeartrateSettings heartrate_settings = 29;   
+    
+    // The bicycle info
+    optional ScoreBicycleInfo bicycle_info = 30;    
+    
+    // List of devices and their (basic) information
+    repeated ScoreDeviceInfo devices = 31;
+	
+	// Score type
+	optional int32 score_type = 32;
+
+	// Stores if virtual speed is used for this score
+    optional bool has_virtual_speed = 33;
+
+    // The raw distance travelled during the training in meters.
+    optional float raw_distance = 34;
+
+}
+
+
+
+
+
+enum ScoreProtocolType {
+    SCORE_PROTOCOL_TYPE_UNKNOWN = 0;
+    SCORE_PROTOCOL_TYPE_BUSHIDO = 1;
+    SCORE_PROTOCOL_TYPE_VORTEX = 2;
+    SCORE_PROTOCOL_TYPE_GENIUS = 3;
+    SCORE_PROTOCOL_TYPE_SATORI = 4;
+    SCORE_PROTOCOL_TYPE_FEC_COMPATIBLE_TRAINER = 5;
+    SCORE_PROTOCOL_TYPE_NEO = 6;
+    SCORE_PROTOCOL_TYPE_FLOW = 7;
+    SCORE_PROTOCOL_TYPE_HEARTRATE_SENSOR = 8;
+    SCORE_PROTOCOL_TYPE_POWER_SENSOR = 9;
+    SCORE_PROTOCOL_TYPE_BLACK_TRACK = 10;
+    SCORE_PROTOCOL_TYPE_CADENCE_SENSOR = 11;
+    SCORE_PROTOCOL_TYPE_SPEED_CADENCE_SENSOR = 12;
+    SCORE_PROTOCOL_TYPE_CURSOR_CONTROL = 13;
+    SCORE_PROTOCOL_TYPE_VIRTUAL_POWER_BLUE_MOTION = 14;
+    SCORE_PROTOCOL_TYPE_VIRTUAL_POWER_BLUE_MATIC = 15;
+    SCORE_PROTOCOL_TYPE_FLUX = 16;
+    SCORE_PROTOCOL_TYPE_MAGNUM = 17;
+}
+
+
+
+
+
+
+
+message ScoreSample {
+    // The speed in meter/second.
+    optional float speed = 1;
+
+    // The power in watt.
+    optional int32 power = 2;
+
+    // The distance in meter
+    optional float distance = 3;
+
+    // The time this sample was recorded at.
+    optional TimeSpan time = 4;
+
+    // The cadence in hertz.
+    optional int32 cadence = 5;
+
+    // The heartbeat in BPM.
+    optional int32 legacy_heart_rate = 6;
+
+    // The power returned from the brake in watt.
+    optional int32 power_back = 7;
+
+    // The energy output. (Joule)
+    optional float energy_output = 8;
+    
+    // The heartbeat in Hz.
+    optional float heart_rate_hz = 9;
+
+    // The raw speed in meter/second.
+    optional float raw_speed = 10;
+
+    // The raw distance in meter
+    optional float raw_distance = 11;
+
+}
+
+
+
+
+
+message ScoreStatistics {
+    // The maximum value.
+    optional float maximum = 10;
+    
+    // The average value.
+    optional float average = 11;
+}
+
+
+
+
+
+enum ScoreType {
+    // Cycling type
+    SCORE_TYPE_CYCLING = 0;
+    
+    // Running type
+    SCORE_TYPE_RUNNING = 1;
+}
+
+
+
+
+
+message Segment { // Original name: 'Segment'
+    // The field storing additional data
+    // NOTE: This field is defined here to be complete but isn't normally used when working with a Segment (side effect on how AIM defined the model in C#)
+    optional Segment1 member = 1;   
+    
+    // The position in the training where this segment starts, from the start of the training.
+    optional float position_from_start = 10;
+    
+    // Value of the training block. This determines it's height (visually) and it's difficulty (how hard to cycle).
+    // Data is interpreted according to training program it is contained in.
+    // Slope: slope in form of -1.0 -> 1.0 (positive slope is uphill; negative is dowhill.)
+    // Power: Watt
+    // Heartrate: hertz
+    // RelativePower: percentage, a value between 0 and 1.
+    // RelativeHeartRate: percentage, a value between 0 and 1.
+    optional float value = 11;
+}
+
+message Segment1 { // Original name: 'GpsPoint'
+    // The field containing additional data
+    // NOTE: This field is defined here to be complete but isn't normally used when working with a Segment (side effect on how AIM defined the model in C#)
+    optional Segment2 member = 1;
+    
+    // The latutude of this GPS point.
+    optional float latitude = 10;
+    
+    // The longitude of this GPS point.
+    optional float longitude = 11;
+    
+    // The altitude of this GPS point.
+    optional float altitude = 12;
+}
+
+// NOTE: This message is defined here to be complete but isn't normally used when working with a Segment (side effect on how AIM defined the model in C#)
+message Segment2 { // Original name: 'VideoPoint'
+    // The current video frame
+    optional int32 frame = 1;
+        
+    // The timestamp of the current video frame
+    optional float time_stamp = 2;
+}
+
+
+
+
+
+
+
+message SegmentData {
+    // The list of segments.
+    repeated Segment item = 1;
+}
+
+
+
+
+
+// Enum defining segment types.
+enum SegmentType {
+    // Slope over distance
+    SLOPE_DISTANCE = 0;
+    
+    // Slope over time
+    SLOPE_TIME = 1;
+    
+    // Power (Watt) over distance
+    POWER_DISTANCE = 2;
+    
+    // Power (Watt) over time
+    POWER_TIME = 3;
+    
+    // Heartrate over distance
+    HEART_RATE_DISTANCE = 4;
+    
+    // Heartrate over time
+    HEART_RATE_TIME = 5;
+    
+    // Relative Power (percentage of the users FTP) over distance.
+    RELATIVE_POWER_DISTANCE = 6;
+    
+    // Relative Power (percentage of the users FTP) over time.
+    RELATIVE_POWER_TIME = 7;
+    
+    // Relative Heart Rate (percentage of the users Maximum heart hate) over distance.
+    RELATIVE_HEART_RATE_DISTANCE = 8;
+    
+    //  Relative Power (percentage of the users FTP) over distance.
+    RELATIVE_HEART_RATE_TIME = 9;
+}
+
+
+
+
+
+enum TestType {
+    TEST_TYPE_NONE = 0;
+    TEST_TYPE_CP20 = 1;
+}
+
+
+
+
+
+
+// From: http://code.google.com/p/protobuf-net/source/browse/trunk/Tools/bcl.proto
+message TimeSpan {
+    // The size of the timespan (in units of the selected scale)
+    optional sint64 value = 1;
+    
+    // The scale of the timespan.
+    optional TimeSpanScale scale = 2 [default = DAYS];
+
+    // The time span scale enum.    
+    enum TimeSpanScale {
+        DAYS = 0;
+        HOURS = 1;
+        MINUTES = 2;
+        SECONDS = 3;
+        MILLISECONDS = 4;
+        TICKS = 5;
+
+        MINMAX = 15; // dubious
+    }
+}
+
+
+
+
+
+
+
+message Training {
+    // The training info
+    required TrainingInfo info = 1;
+    
+    // The training data.
+    optional TrainingData data = 100;
+}
+
+
+
+
+
+
+
+message TrainingData {
+    // The field containing video data. Will and MUST be undefined (null) when either the gps or segment data field is assigned.
+    optional VideoData   video_data = 1;
+    
+    // The field containing gps data. Will and MUST be undefined (null) when either the video or segment data field is assigned.
+    optional GpsData     gps_data = 2;
+    
+    // The field containing segment data. Will and MUST be undefined (null) when either the video or gps data field is assigned.
+    optional SegmentData segment_data = 3;
+    
+    // The field containing a list of a data tracks. This field CAN contain data while either the video, gps or segment data field is assigned.
+    repeated DataTrack data_tracks = 100;
+}
+
+
+
+
+
+
+
+message TrainingGoalDataTrack {
+    // The value for this training goal data track.
+    // Numeric type to store a speed, power or cadence... (SI units)
+    optional float    value = 1;
+    
+    // The training goal type.
+    // An enumeration initially defining Speed, Power, Cadence, ...
+    optional TrainingGoalType    training_goal_type = 2;
+}
+
+
+
+
+
+enum TrainingGoalType {
+    TRAINING_GOAL_NONE = 0;
+    TRAINING_GOAL_SPEED = 1;
+    TRAINING_GOAL_POWER = 2;
+    TRAINING_GOAL_CADENCE = 3;
+}
+
+
+
+
+
+
+
+message TrainingInfo { // Original name: 'BasicInfo'
+    // The field storing additional data
+    optional TrainingInfo1 member = 1;
+    
+    // The creation time (UTC).
+    required DateTime date_created = 12;
+}
+
+message TrainingInfo1 { // Original name: 'TrainingInfo'
+    // The name of the training.
+    required string name = 1;
+    
+    // The description of the training.
+    optional string description = 2;
+    
+    // The training type.
+    optional TrainingType training_type = 3;
+    
+    // The segment type.
+    optional SegmentType segment_type = 4;
+	
+	// The training tags.
+	optional int32 tags = 5;
+
+    // The training' thumbnail image data (PNG).
+    optional bytes thumbnail = 7; // in PNG form
+
+    // The app info
+    optional AppInfo app_info = 28;
+
+    // The test type
+    optional int32 test_type = 8; // See test_type.proto for the available options
+}
+
+
+
+
+
+enum TrainingTags {
+    TRAINING_TAG_RUNNING = 1;
+    TRAINING_TAG_CYCLING = 2;
+}
+
+
+
+
+
+enum TrainingType {
+    // Catalyst training type.
+    CATALYST = 0;
+    
+    // Gps training type.
+    GPS = 1;
+    
+    // Video training type.
+    VIDEO = 2;
+}
+
+
+
+
+
+
+// From: http://code.google.com/p/protobuf-net/source/browse/trunk/Tools/bcl.proto
+message Uuid {
+    // The first 8 bytes of the guid.
+    optional fixed64 lo = 1;
+    
+    // The second 8 bytes of the guid.
+    optional fixed64 hi = 2; 
+}
+
+
+message VideoData {
+    // The list of video points.
+    repeated VideoPoint item = 1;
+    
+    // The video name.
+    optional string video_name = 2;
+    
+    // The product id of the associated product on the store.
+    optional string product_id = 3;
+    
+    // The video type.
+    optional VideoType video_type = 4;
+    
+    // This field stores if the video contains audio or not.
+    optional bool has_audio = 5;
+    
+    // The frame rate of the video.
+    optional float frame_rate = 6;
+}
+
+
+message VideoPoint { // Original name: 'Segment'
+    // The field storing additional data
+    optional VideoPoint1 member = 1;
+    
+    // The position in the training where this segment starts, from the start of the training.
+    optional float position_from_start = 10;
+    
+    // Value of the training block. This determines it's height (visually) and it's difficulty (how hard to cycle).
+    // Data is interpreted according to training program it is contained in.
+    // Slope: slope in form of -1.0 -> 1.0 (positive slope is uphill; negative is dowhill.)
+    // Power: Watt
+    // Heartrate: hertz
+    // RelativePower: percentage, a value between 0 and 1.
+    // RelativeHeartRate: percentage, a value between 0 and 1.
+    optional float value = 11;
+}
+
+message VideoPoint1 { // Original name: 'GpsPoint'
+    // The field containing additional data
+    optional VideoPoint2 member = 1;
+    
+    // The latutude of this GPS point.
+    optional float       latitude = 10;
+    
+    // The longitude of this GPS point.
+    optional float       longitude = 11;
+    
+    // The altitude of this GPS point.
+    optional float       altitude = 12;
+}
+
+message VideoPoint2 { // Original name: 'VideoPoint'    
+    // The current video frame
+    optional int32 frame = 1;
+    
+    // The timestamp of the current video frame
+    optional float time_stamp = 2;
+}
+
+
+enum VideoType {
+    // Regular video.
+    NORMAL = 0;
+    
+    // Ergo video.
+    ERGO = 1;
+}

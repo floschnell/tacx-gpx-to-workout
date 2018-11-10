@@ -1,0 +1,23 @@
+<html>
+
+  <head>
+    <title>GPX to Tacx workout converter</title>
+  </head>
+
+  <body>
+    <h1>Convert GPX recording to Tacx workout</h1>
+    <div style="display:flex;flex-direction:column;height:160px;">
+      <div style="flex-grow:1"><label for="gpsFile">Select GPX file:</label><input type="file" id="gpxFile" multiple="false"
+          accept=".gpx"></div>
+      <div style="flex-grow:1"><label for="rasterSize">Raster Size:</label><input id="rasterSize" type="range" min="0.1"
+          step="0.1" max="1.0" value="0.3"><span id="rasterSizeValue">0.3 %</span></div>
+      <div style="flex-grow:1"><label for="rasterSize">Maximum Slope:</label><input id="maxSlope" type="range" min="1.0"
+          step="0.5" max="15.0" value="5.0"><span id="maxSlopeValue">5.0 %</span></div>
+      <div style="flex-grow:1"><label for="tacxToken">Tacx Token:</label><input id="tacxToken" type="text" value="tacx:"></div>
+      <div style="flex-grow:1"><input type="button" id="startConversionButton" value="Convert to Tacx Workout"></input></div>
+    </div>
+    <div id="result" style="font-family: 'Courier New', Courier, monospace"></div>
+    <script src="dist/bundle.js"></script>
+  </body>
+
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "tacx",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Florian Schnell",
+  "license": "MIT",
+  "scripts": {
+    "install": "webpack"
+  },
+  "dependencies": {
+    "gpx-parse": "^0.10.4",
+    "protobufjs": "^6.8.8"
+  },
+  "devDependencies": {
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.24.0",
+    "webpack-cli": "^3.1.2"
+  }
+}
