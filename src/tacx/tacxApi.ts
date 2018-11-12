@@ -11,7 +11,7 @@ export class TacxApi {
     this.token = token;
   }
 
-  async saveTraining(trainingData: string): Promise<void> {
+  async saveTraining(trainingData: string): Promise<string> {
     const trainingFile = await this.createTrainingFile();
     const boundary = Math.random().toString().substr(2);
     const data = trainingData.substr(trainingData.indexOf(",") + 1);
@@ -25,6 +25,7 @@ export class TacxApi {
     while (!await this.doesWorkoutExist(trainingFile.generatedCourseUuid)) {
       await new Promise((resolve) => window.setTimeout(() => resolve(), 1000));
     }
+    return `https://cloud.tacx.com/#/workouts/${trainingFile.generatedCourseUuid}`;
   }
 
   private async createTrainingFile(): Promise<ITrainingFile> {

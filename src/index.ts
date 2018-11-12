@@ -46,8 +46,9 @@ convertButton.onclick = async () => {
       resultBox.innerHTML += `saving workout ...<br />`;
 
       const tacxTraining = await training.encode();
-      await tacxApi.saveTraining(tacxTraining);
+      const workoutUrl = await tacxApi.saveTraining(tacxTraining);
       resultBox.innerHTML += `workout has been saved as "${training.title}"<br />`;
+      resultBox.innerHTML += `<a href="${workoutUrl}" target="_blank">you can now access your workout here</a><br />`;
     } catch (e) {
       resultBox.innerHTML += "an error occured during the conversion!<br>";
       resultBox.innerHTML += `${e}<br />`;
