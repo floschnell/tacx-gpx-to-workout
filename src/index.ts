@@ -44,11 +44,10 @@ convertButton.onclick = async () => {
       }, resultBox);
 
       resultBox.innerHTML += `saving workout ...<br />`;
-      await training.encode()
-        .then((trainingData) => tacxApi.saveTraining(trainingData))
-        .then(() => {
-          resultBox.innerHTML += `workout has been saved as "${training.title}"<br />`;
-        });
+
+      const tacxTraining = await training.encode();
+      await tacxApi.saveTraining(tacxTraining);
+      resultBox.innerHTML += `workout has been saved as "${training.title}"<br />`;
     } catch (e) {
       resultBox.innerHTML += "an error occured during the conversion!<br>";
       resultBox.innerHTML += `${e}<br />`;
