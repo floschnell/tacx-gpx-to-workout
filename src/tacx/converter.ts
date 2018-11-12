@@ -2,6 +2,8 @@ import * as parse from "gpx-parse/dist/gpx-parse-browser.js";
 import { BSpline } from "../lib/spline";
 import { Training } from "./training";
 
+const MILE_TO_METER = 1609.34;
+
 async function parseGpx(gpxData: string): Promise<any> {
   return new Promise((resolve, reject) => {
     parse.parseGpx(gpxData, (err, gpx) => {
@@ -31,7 +33,7 @@ export async function convertGpxToTacxWorkout(gpxData, {
   gpx.tracks[0].segments[0].forEach((segment, index) => {
     if (index > 0) {
       const previousSegment = gpx.tracks[0].segments[0][index - 1];
-      const distance = parse.utils.calculateDistance(previousSegment.lat, previousSegment.lon, segment.lat, segment.lon) * 1609.34;
+      const distance = parse.utils.calculateDistance(previousSegment.lat, previousSegment.lon, segment.lat, segment.lon) * MILE_TO_METER;
       const slope = (segment.elevation - previousSegment.elevation) / distance;
       totalDistance += distance;
       const maxSlopeInPercent = maxSlope / 100.0;
